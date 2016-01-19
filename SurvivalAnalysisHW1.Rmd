@@ -1,5 +1,5 @@
 ---
-title: "Survival Analysis HW1"
+title: "Survival Analysis HW 1"
 author: "Mario Ibanez"
 date: "January 18, 2016"
 output: pdf_document
@@ -36,10 +36,8 @@ It's worth noting that in this distribution, $\lambda>0$ is the scale parameter,
 
 \begin{align*}
 h(x)
-&= .......... \; really \; hard
+&= .......... 
 \end{align*}
-
-
 
 **b)** Let $\alpha = 2$.  Then:
 
@@ -57,6 +55,60 @@ b) What is the mean time to battery failure?
 c) If the battery is scheduled to be replaced at the time $t_0$, at which 99% of all batteries have yet to fail (that is, at $t_0$ so that $P(X>t_0)=0.99$), find $t_0$.   
 
 ## Answer
+The pdf of the Pareto distribution is 
+$$
+f(x) = 
+\begin{cases} 
+\frac{\theta \lambda^{\theta}}{x^{\theta+1}}   &\mbox{for } x \ge \lambda \\ 
+0                                              &\mbox{otherwise }  
+\end{cases}
+$$
+and with $\theta = 4$ and $\lambda = 5$
+$$
+f(x) = 
+\begin{cases} 
+\frac{2500}{x^5}   &\mbox{for } x \ge 5 \\ 
+0                  &\mbox{otherwise }  
+\end{cases}
+$$
+
+**a)** The probability that the battery will last for at least 10 years is
+\begin{align*}
+P(X \ge 10)
+&= \int_{10}^{\infty} \frac{2500}{x^5} dx \\[1ex]
+&= \left[ \frac{-625}{x^4}\right]^{\infty}_{10} \\[1ex]
+&= 0+\frac{625}{10000} \\[1ex]
+&= 0.0625 \\[1ex]
+&= 6.25\%
+\end{align*}
+There is a 6.25% chance that the battery lasts longer than 10 years.   
+
+**b)** The mean time to battery failure is
+\begin{align*}
+E(X)
+&= \int_{5}^{\infty} x \frac{2500}{x^5} dx \\[1ex]
+&= \int_{5}^{\infty} \frac{2500}{x^4} dx \\[1ex]
+&= \left[ \frac{2500}{(-3)x^3}\right]^{\infty}_{5} \\[1ex]
+&= 0 + \frac{2500}{(3)(125)} \\[1ex]
+&= \frac{20}{3} \\[1ex]
+&\approx 6.667
+\end{align*}
+The mean time to battery failure is $\frac{20}{3} \approx 6.667$ years.
+
+
+**c)** In order to find $t_0$ such that $P(X>t_0)=0.99$, we solve the equation:
+$$
+\int_5^{t_0} \frac{2500}{x^5} dx = 0.01
+$$
+for $t_0$. Then doing so, 
+\begin{align*}
+\int_5^{t_0} \frac{2500}{x^5} dx  &= 0.01  \\[1ex]
+\left[ \frac{-625}{x^4}\right]^{t_0}_{5}  &=  0.01  \\[1ex]
+1 - \frac{625}{t_0^4}&= 0.01 \\[1ex]
+\frac{625}{0.99} &= t_0^4 \\[1ex]
+t_0 &\approx 5.012579 
+\end{align*}
+So, $t_0 \approx 5.01$ years, or 5 years and roughly 4 days.
 
 
 # Problem 2.10
@@ -65,12 +117,24 @@ $$
 S(x) = 
 \begin{cases} 
 1                               &\mbox{if } x < G \\ 
-exp(-\lambda(x-G)^{-\alpha})    &\mbox{if } x \ge G 
+exp(-\lambda(x-G)^{\alpha})    &\mbox{if } x \ge G 
 \end{cases}
 $$
+a) Find the hazard rate and the density function of the three-parameter Weibull distribution.  
+b) Suppose that the survival time $X$ follows a three-parameter Weibull distribution with $\alpha=1$, $\lambda=0.0075$ and $G=100$.  Find the mean and median lifetimes.   
 
 ## Answer
 
+**a)**  
+
+**b)** With those values, the survival function is then
+$$
+S(x) = 
+\begin{cases} 
+1                       &\mbox{if } x < 100 \\ 
+e^{(-0.0075(x-100))}    &\mbox{if } x \ge 100 
+\end{cases}
+$$
 
 # Problem 2.12
 Let $X$ have a uniform distribution on the interval 0 to $\theta$ with density function
