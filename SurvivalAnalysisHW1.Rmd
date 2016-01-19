@@ -1,0 +1,136 @@
+---
+title: "Survival Analysis HW1"
+author: "Mario Ibanez"
+date: "January 18, 2016"
+output: pdf_document
+---
+
+# Problem 2.5
+A model for lifetimes, with a bathtub-shaped hazard rate, is the exponential power distribution with survival function $S(x)=exp(1-exp((\lambda x)^\alpha))$.  
+a) If $\alpha = 0.5$, show that the hazard rate has a bathtub shape and find the time at which the hazard rate changes from decreasing to increasing.  
+b) If $\alpha = 2$, show that the hazard rate of $x$ is monotone increasing.
+
+## Answer
+First we find the hazard function:
+
+\begin{align*}
+h(x)
+&= \frac{-S'(x)}{S(x)} \\
+&= \frac{exp(1-exp((\lambda x)^\alpha)) * e^{(\lambda x)^{\alpha}} \lambda ^ \alpha \alpha x^{\alpha - 1}}{exp(1-exp((\lambda x)^\alpha))} \\
+&= \alpha \lambda^{\alpha} x^{\alpha - 1} e^{(\lambda x)^{\alpha}}
+\end{align*}
+
+and 
+
+\begin{align*}
+h'(x)
+&= \alpha \lambda^{\alpha} \left[(\alpha - 1)x^{\alpha - 2} exp((\lambda x)^{\alpha}) +
+   x^{\alpha-1} exp((\lambda x)^{\alpha}) \alpha (\lambda x)^{\alpha - 1} \lambda  \right] \\
+&= \alpha \lambda^{\alpha} exp((\lambda x)^{\alpha}) \left[(\alpha - 1)x^{\alpha - 2}
+   + x^{\alpha-1} \alpha (\lambda x)^{\alpha - 1} \lambda   \right]
+\end{align*}
+
+It's worth noting that in this distribution, $\lambda>0$ is the scale parameter, $\alpha>0$ is the shape parameter, and the support is $x>0$.
+
+**a)** Let $\alpha = 0.5$.  Then:
+
+\begin{align*}
+h(x)
+&= .......... \; really \; hard
+\end{align*}
+
+
+
+**b)** Let $\alpha = 2$.  Then:
+
+\begin{align*}
+h'(x)
+&= 2 \lambda^2 e^{(\lambda x)^2} \left[ 1 + x(2)(\lambda x) \lambda  \right]
+\end{align*}
+
+Since $x>0$ and $\lambda > 0$, it is easy to see that the derivative is always positive since the only operations are addition and multiplication of postive terms.  Thus, the hazard rate of $x$ is monotone increasing.
+
+# Problem 2.8
+The battery life of an internal pacemaker, in years, follows a Pareto distribution with $\theta = 4$ and $\lambda = 5$.   
+a) What is the probability the battery will survive for at least 10 years?   
+b) What is the mean time to battery failure?  
+c) If the battery is scheduled to be replaced at the time $t_0$, at which 99% of all batteries have yet to fail (that is, at $t_0$ so that $P(X>t_0)=0.99$), find $t_0$.   
+
+## Answer
+
+
+# Problem 2.10
+In some applications, a third parameter, called a guarantee time, is included in the models discussed in this chapter.  This parameter $G$ is the smallest time at which a failure could occur.  The survival function of the three-parameter Weibull distribution is given by
+$$
+S(x) = 
+\begin{cases} 
+1                               &\mbox{if } x < G \\ 
+exp(-\lambda(x-G)^{-\alpha})    &\mbox{if } x \ge G 
+\end{cases}
+$$
+
+## Answer
+
+
+# Problem 2.12
+Let $X$ have a uniform distribution on the interval 0 to $\theta$ with density function
+$$
+f(x) = 
+\begin{cases} 
+1/\theta  &\mbox{for } 0 \le x \le \theta \\ 
+0         &\mbox{otherwise }
+\end{cases}
+$$
+a) Find the survival function of $X$.  
+b) Find the hazard rate of $X$.   
+c) Find the mean residual-life function.   
+
+## Answer
+
+
+# Problem 2.15
+Based on data reported to the International Bone Marrow Transplant Registry, the survival function for a person given an HLA- identical sibling transplant for refractory multiple myeloma is given by
+
+|x                       | S(x)                 |
+|:----------------------:|:---------------------|
+|Months Post Transplant  | Survival Probability |
+|$0 \le x < 6$           | 1.00                 |
+|$6 \le x < 12$          | 0.55                 |
+|$12 \le x < 18$         | 0.43                 |
+|$18 \le x < 24$         | 0.34                 |
+|$24 \le x < 30$         | 0.30                 |
+|$30 \le x < 36$         | 0.25                 |
+|$36 \le x < 42$         | 0.18                 |
+|$42 \le x < 48$         | 0.10                 |
+|$48 \le x < 54$         | 0.06                 |
+|$x \ge 54$              | 0                    |
+
+a) Find the probability mass function for the time to death for a refractory multiple myeloma bone marrow transplant patient.   
+b) Find the hazard rate of $X$.   
+c) Find the mean residual life at 12, 24, and 36 months post transplant.   
+d) Find the median residual life at 12, 24, and 36 months.   
+
+## Answer
+
+
+# Problem 2.18
+Given a covariate $Z$, suppose that the log survival time $Y$ follows a linear model with a logistic error distribution, that is
+$$
+Y = ln(X) = \mu + \beta Z + \sigma W
+$$
+where the pdf of $W$ is given by
+$$
+f(w) = \frac{e^w}{(1+e^w)^2}, \;\; -\infty < w < \infty
+$$
+
+a) For an individual with covariate Z, find the conditional survival function of the survival time $X$, given $Z$, namely, $S(x|Z)$.  
+b) The odds that an individual will die prior to time $x$ is expressed by $\frac{1-S(x|Z)}{S(x|Z)}$.  Compute the odds of death prior to time $x$ for this model.     
+c) Consider two individuals with different covariate values.  Show that, for any time $x$, the ratio of their odds of deaths is independent of $x$.  The log logistic regression model is the only model with this property.  
+
+
+## Answer
+
+
+
+
+
