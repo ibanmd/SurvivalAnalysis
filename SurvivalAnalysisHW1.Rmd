@@ -327,7 +327,37 @@ mrl(36) = 6 * \frac{S(36 + ..... + S(48)}{S(36)} = 6 * \frac{0.34}{0.18} \approx
 $$
 
 
-**d)**  
+**d)** For median residual life, we are looking for the smallest value of $x$ such that $S(x) \le 0.5$.  This is equivalent to finding the smallest $x$ such that $F(x) \ge 0.5$.  The only difference is that we are conditioning on $X>x$.  For example, we are looking for the median of the distribution $X-12 | X > 12$ by finding the smallest value $x$ such that $F(x) \ge 0.5$ and where $F(x)$ is conditioned on $X>12$.  So for $mdrl(12)$ we would have:
+ 
+|X    | X-12 = residual   | $P(X \le x|X>12)$  |
+|:----|:------------------|:-------------------|
+|18   |6                  |0.209               |
+|24   |12                 |0.302               |
+|30   |18                 |0.419               |
+|36   |24                 |0.580               |
+|42   |30                 |0.767               |
+|48   |36                 |0.860               |
+|54   |42                 |1                   |
+
+Therefore, $mdrl(12) = 24$.  In otherwords, about have the patients who reach 12 months would survive another 24 months.  Linear interpolation between 18 and 24 months would give $6*(0.81)/1.61+18 = 21.02$ months as the median residual after reaching 12 months.  Now the next chart for $mdrl(24)$:  
+
+|X    | X-24 = residual   | $P(X \le x|X>24)$  |
+|:----|:------------------|:-------------------|
+|30   |6                  |0.167               |
+|36   |12                 |0.400               |
+|42   |18                 |0.667               |
+|48   |24                 |0.800               |
+|54   |30                 |1                   |
+
+Therefor $mdrl(24) = 18$ months.  Linear interpolation can be used to get an answer of 14.25 months.  Next, $mdrl(36)$:
+
+|X    | X-36 = residual   | $P(X \le x|X>36)$  |
+|:----|:------------------|:-------------------|
+|42   |6                  |0.444               |
+|48   |12                 |0.667               |
+|54   |18                 |1                   |
+
+Therefor $mdrl(36) = 12$ months.  Linear interpolation can be used to get an answer of 7.5 months.
 
 # Problem 2.18
 Given a covariate $Z$, suppose that the log survival time $Y$ follows a linear model with a logistic error distribution, that is
