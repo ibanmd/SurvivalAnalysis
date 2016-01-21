@@ -258,19 +258,19 @@ $$
 # Problem 2.15
 Based on data reported to the International Bone Marrow Transplant Registry, the survival function for a person given an HLA- identical sibling transplant for refractory multiple myeloma is given by
 
-|x                       | S(x)                 |
-|:----------------------:|:---------------------|
-|Months Post Transplant  | Survival Probability |
-|$0 \le x < 6$           | 1.00                 |
-|$6 \le x < 12$          | 0.55                 |
-|$12 \le x < 18$         | 0.43                 |
-|$18 \le x < 24$         | 0.34                 |
-|$24 \le x < 30$         | 0.30                 |
-|$30 \le x < 36$         | 0.25                 |
-|$36 \le x < 42$         | 0.18                 |
-|$42 \le x < 48$         | 0.10                 |
-|$48 \le x < 54$         | 0.06                 |
-|$x \ge 54$              | 0                    |
+|x                       | S(x)                 | F(x)    |
+|:----------------------:|:---------------------|:--------|
+|Months Post Transplant  | Survival Probability | CDF     |
+|$0 \le x < 6$           | 1.00                 | 0.00    |
+|$6 \le x < 12$          | 0.55                 | 0.45    |
+|$12 \le x < 18$         | 0.43                 | 0.57    |
+|$18 \le x < 24$         | 0.34                 | 0.66    |
+|$24 \le x < 30$         | 0.30                 | 0.70    |
+|$30 \le x < 36$         | 0.25                 | 0.75    | 
+|$36 \le x < 42$         | 0.18                 | 0.82    |
+|$42 \le x < 48$         | 0.10                 | 0.90    |
+|$48 \le x < 54$         | 0.06                 | 0.94    | 
+|$x \ge 54$              | 0                    | 1.00    |
 
 a) Find the probability mass function for the time to death for a refractory multiple myeloma bone marrow transplant patient.   
 b) Find the hazard rate of $X$.   
@@ -279,6 +279,55 @@ d) Find the median residual life at 12, 24, and 36 months.
 
 ## Answer
 
+**a)**  The probability mass function is:
+$$
+p(x) = 
+\begin{cases} 
+0.45  &\mbox{if } x = 6 \\ 
+0.12  &\mbox{if } x = 12 \\
+0.09  &\mbox{if } x = 18 \\
+0.04  &\mbox{if } x = 24 \\
+0.05  &\mbox{if } x = 30 \\
+0.07  &\mbox{if } x = 36 \\
+0.08  &\mbox{if } x = 42 \\
+0.04  &\mbox{if } x = 48 \\
+0.06  &\mbox{if } x = 54 \\
+0     &\mbox{elsewhere}
+\end{cases}
+$$
+
+**b)** The hazard rate of $X$ can be found by $h(x_j) = \frac{p(x_j)}{S(x_{j-1})}$.
+$$
+h(x) = 
+\begin{cases} 
+0.45   &\mbox{if } x = 6 \\ 
+0.218  &\mbox{if } x = 12 \\
+0.209  &\mbox{if } x = 18 \\
+0.118  &\mbox{if } x = 24 \\
+0.167  &\mbox{if } x = 30 \\
+0.280  &\mbox{if } x = 36 \\
+0.444  &\mbox{if } x = 42 \\
+0.400  &\mbox{if } x = 48 \\
+1.000  &\mbox{if } x = 54 \\
+0      &\mbox{elsewhere}
+\end{cases}
+$$
+
+**c)** The formula for mean residual life for a discrete $X$ gives (with a simplification since each value of $x_{j+1}-x_j=6$ and each value 12, 24, and 36 are equal to an $x_j$):
+$$
+mrl(12) = 6 * \frac{S(12) + ..... + S(48)}{S(12)} = 6 * \frac{1.66}{0.43} \approx 23.16 \; \mbox{months }
+$$
+
+$$
+mrl(24) = 6 * \frac{S(24) + ..... + S(48)}{S(24)} = 6 * \frac{0.89}{0.30} = 17.8 \;\mbox{months }
+$$
+
+$$
+mrl(36) = 6 * \frac{S(36 + ..... + S(48)}{S(36)} = 6 * \frac{0.34}{0.18} \approx 11.33 \;\mbox{months }
+$$
+
+
+**d)**  
 
 # Problem 2.18
 Given a covariate $Z$, suppose that the log survival time $Y$ follows a linear model with a logistic error distribution, that is
