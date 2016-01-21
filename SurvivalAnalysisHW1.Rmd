@@ -35,9 +35,21 @@ It's worth noting that in this distribution, $\lambda>0$ is the scale parameter,
 **a)** Let $\alpha = 0.5$.  Then:
 
 \begin{align*}
-h(x)
-&= .......... 
+h'(x)
+&= \frac{1}{2} \sqrt{\lambda} e^{\sqrt{\lambda x}} \left[ \frac{-1}{2} x^{-3/2} + x^{-1/2}\frac{1}{2} (\lambda x)^{-1/2} \lambda \right] \\
+&= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\lambda}{2 \sqrt{x} \sqrt{\lambda} \sqrt{x}}  - \frac{1}{2 x \sqrt{x} }   \right] \\
+&= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\sqrt{\lambda}}{2x}  - \frac{1}{2x\sqrt{x}}   \right] \\
+&= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\sqrt{\lambda x} - 1}{2 x \sqrt{x}}  \right] 
 \end{align*}
+This is the product of two terms.  The term
+$$
+\frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2}
+$$
+is always positive.  The other term
+$$
+\frac{\sqrt{\lambda x} - 1}{2 x \sqrt{x}}  
+$$
+is zero when $x=\frac{1}{\lambda}$, is negative when $x<\frac{1}{\lambda}$ and is positive when $x>\frac{1}{\lambda}$.  (The denominator is always positive, only the numerator affects the sign of this term)  This shows that the hazard rate function has a bathtub shape and changes from decreasing to increasing at $x=\frac{1}{\lambda}$.   
 
 **b)** Let $\alpha = 2$.  Then:
 
@@ -125,7 +137,24 @@ b) Suppose that the survival time $X$ follows a three-parameter Weibull distribu
 
 ## Answer
 
-**a)**  
+**a)** Using the fact that $f(x) = -S'(x)$, we have: 
+$$
+f(x) = 
+\begin{cases} 
+0                                                              &\mbox{if } x < G \\ 
+exp(-\lambda(x-G)^{\alpha})(\lambda \alpha)(x-G)^{\alpha - 1}  &\mbox{if } x \ge G 
+\end{cases}
+$$
+
+And then using the fact that $h(x) = \frac{f(x)}{S(x)}$ we have:
+
+$$
+h(x) = 
+\begin{cases} 
+0                                                              &\mbox{if } x < G \\ 
+\lambda \alpha (x-G)^{\alpha - 1}  &\mbox{if } x \ge G 
+\end{cases}
+$$
 
 **b)** With those values, the survival function is then
 $$
@@ -135,6 +164,45 @@ S(x) =
 e^{(-0.0075(x-100))}    &\mbox{if } x \ge 100 
 \end{cases}
 $$
+
+or rewritten 
+
+**Mean Life** - The mean life is defined by:
+$$
+\mu = mrl(0) = \int_0^{\infty} S(t) dt
+$$
+
+So we have:
+
+\begin{align*}
+\mu 
+&= \int_0^{infty} S(t) dt \\
+&= 100 + \int_{100}^{\infty} S(t) dt \\
+&= 100 + \int_{100}^{\infty} e^{(-0.0075(x-100))} dt \\
+&= 100 + \int_{100}^{\infty} e^{(-0.0075(x-100))} dt \\
+&= 100 + \frac{e^{0.75}}{-0.0075} \left[ 1 / e^{0.0075 x}  \right]^{\infty}_{100} \\
+&= 100 + \frac{e^{0.75}}{-0.0075} * [0 - 1 / e^{0.75}] \\
+&= 100 + \frac{1}{0.0075} \\
+&\approx 233.3 
+\end{align*}
+
+The mean life is approximately 233.3.   
+
+**Median Life** - Since $X$ is continuous, the median life is $x_{0.5}$ such that $S(x_{0.5})=0.5$.  The median life occurs sometime after $x=100$, and so we need to solve the equation
+$$
+0.5 = e^{0.75-0.0075x}
+$$
+Doing so
+\begin{align*}
+0.5 &= e^{0.75-0.0075x}  \\
+ln(0.5) &= 0.75 - 0.0075x \\
+0.0075x &= 0.75 - ln(0.5) \\
+x &= \frac{0.75 - ln(0.5)}{0.0075} \\
+x &\approx 192.42 
+\end{align*}
+
+The median life is approximately 192.42.   
+
 
 # Problem 2.12
 Let $X$ have a uniform distribution on the interval 0 to $\theta$ with density function
