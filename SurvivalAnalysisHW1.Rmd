@@ -15,8 +15,8 @@ First we find the hazard function:
 
 \begin{align*}
 h(x)
-&= \frac{-S'(x)}{S(x)} \\
-&= \frac{exp(1-exp((\lambda x)^\alpha)) * e^{(\lambda x)^{\alpha}} \lambda ^ \alpha \alpha x^{\alpha - 1}}{exp(1-exp((\lambda x)^\alpha))} \\
+&= \frac{-S'(x)}{S(x)} \\[1ex]
+&= \frac{exp(1-exp((\lambda x)^\alpha)) * e^{(\lambda x)^{\alpha}} \lambda ^ \alpha \alpha x^{\alpha - 1}}{exp(1-exp((\lambda x)^\alpha))} \\[1ex]
 &= \alpha \lambda^{\alpha} x^{\alpha - 1} e^{(\lambda x)^{\alpha}}
 \end{align*}
 
@@ -25,7 +25,7 @@ and
 \begin{align*}
 h'(x)
 &= \alpha \lambda^{\alpha} \left[(\alpha - 1)x^{\alpha - 2} exp((\lambda x)^{\alpha}) +
-   x^{\alpha-1} exp((\lambda x)^{\alpha}) \alpha (\lambda x)^{\alpha - 1} \lambda  \right] \\
+   x^{\alpha-1} exp((\lambda x)^{\alpha}) \alpha (\lambda x)^{\alpha - 1} \lambda  \right] \\[1ex]
 &= \alpha \lambda^{\alpha} exp((\lambda x)^{\alpha}) \left[(\alpha - 1)x^{\alpha - 2}
    + x^{\alpha-1} \alpha (\lambda x)^{\alpha - 1} \lambda   \right]
 \end{align*}
@@ -36,11 +36,12 @@ It's worth noting that in this distribution, $\lambda>0$ is the scale parameter,
 
 \begin{align*}
 h'(x)
-&= \frac{1}{2} \sqrt{\lambda} e^{\sqrt{\lambda x}} \left[ \frac{-1}{2} x^{-3/2} + x^{-1/2}\frac{1}{2} (\lambda x)^{-1/2} \lambda \right] \\
-&= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\lambda}{2 \sqrt{x} \sqrt{\lambda} \sqrt{x}}  - \frac{1}{2 x \sqrt{x} }   \right] \\
-&= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\sqrt{\lambda}}{2x}  - \frac{1}{2x\sqrt{x}}   \right] \\
+&= \frac{1}{2} \sqrt{\lambda} e^{\sqrt{\lambda x}} \left[ \frac{-1}{2} x^{-3/2} + x^{-1/2}\frac{1}{2} (\lambda x)^{-1/2} \lambda \right] \\[1ex]
+&= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\lambda}{2 \sqrt{x} \sqrt{\lambda} \sqrt{x}}  - \frac{1}{2 x \sqrt{x} }   \right] \\[1ex]
+&= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\sqrt{\lambda}}{2x}  - \frac{1}{2x\sqrt{x}}   \right] \\[1ex]
 &= \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2} \left[ \frac{\sqrt{\lambda x} - 1}{2 x \sqrt{x}}  \right] 
 \end{align*}
+
 This is the product of two terms.  The term
 $$
 \frac{e^{\sqrt{\lambda x}} \sqrt{\lambda}} {2}
@@ -176,13 +177,13 @@ So we have:
 
 \begin{align*}
 \mu 
-&= \int_0^{infty} S(t) dt \\
-&= 100 + \int_{100}^{\infty} S(t) dt \\
-&= 100 + \int_{100}^{\infty} e^{(-0.0075(x-100))} dt \\
-&= 100 + \int_{100}^{\infty} e^{(-0.0075(x-100))} dt \\
-&= 100 + \frac{e^{0.75}}{-0.0075} \left[ 1 / e^{0.0075 x}  \right]^{\infty}_{100} \\
-&= 100 + \frac{e^{0.75}}{-0.0075} * [0 - 1 / e^{0.75}] \\
-&= 100 + \frac{1}{0.0075} \\
+&= \int_0^{\infty} S(t) dt \\[1ex]
+&= 100 + \int_{100}^{\infty} S(t) dt \\[1ex]
+&= 100 + \int_{100}^{\infty} e^{(-0.0075(x-100))} dt \\[1ex]
+&= 100 + \int_{100}^{\infty} e^{(-0.0075(x-100))} dt \\[1ex]
+&= 100 + \frac{e^{0.75}}{-0.0075} \left[ 1 / e^{0.0075 x}  \right]^{\infty}_{100} \\[1ex]
+&= 100 + \frac{e^{0.75}}{-0.0075}  [0 - 1 / e^{0.75}] \\[1ex]
+&= 100 + \frac{1}{0.0075} \\[1ex]
 &\approx 233.3 
 \end{align*}
 
@@ -194,10 +195,10 @@ $$
 $$
 Doing so
 \begin{align*}
-0.5 &= e^{0.75-0.0075x}  \\
-ln(0.5) &= 0.75 - 0.0075x \\
-0.0075x &= 0.75 - ln(0.5) \\
-x &= \frac{0.75 - ln(0.5)}{0.0075} \\
+0.5 &= e^{0.75-0.0075x}  \\[1ex]
+ln(0.5) &= 0.75 - 0.0075x \\[1ex]
+0.0075x &= 0.75 - ln(0.5) \\[1ex]
+x &= \frac{0.75 - ln(0.5)}{0.0075} \\[1ex]
 x &\approx 192.42 
 \end{align*}
 
@@ -219,6 +220,40 @@ c) Find the mean residual-life function.
 
 ## Answer
 
+**a)** The survival function is found by:
+\begin{align*}
+S(x) 
+&= 1 - \int_0^x f(t) \; dt \\[1ex]
+&= 1 - \int_0^x 1/\theta \; dt \\[1ex]
+&= 1 - \left[ \frac{t}{\theta} \right]^x_0 \\[1ex]
+&= 1 - \frac{x}{\theta}
+\end{align*}
+In other words, as $x$ approaches $\theta$, the survival function approaches 0.
+
+**b)** The hazard rate function is:
+\begin{align*}
+h(x)
+&= \frac{f(x)}{S(x)} \\[1ex]
+&= \frac{1/\theta}{1 - x/\theta} \\[1ex]
+&= \frac{1}{\theta - x}
+\end{align*}
+This makes sense, because as $x$ approaches $\theta$, the hazard approaches infinity.
+
+**c)** And finally the mean residual life function is:
+\begin{align*}
+mrl(x)
+&= \frac{\int_x^{\theta} 1 - t/\theta \; dt}{S(x)} \\[1ex]
+&= \left[ t - \frac{t^2}{2\theta} \right]^{\theta}_x / S(x) \\[1ex]
+&= \frac{(\theta - \theta / 2)-(x - x^2/(2\theta))}{1 - \frac{x}{\theta}} \\[1ex]
+&= \frac{\theta/2 - x + x^2/(2\theta)}{1 - \frac{x}{\theta}} \\[1ex]
+&= \frac{\theta^2 / 2 - x \theta + x^2/2}{\theta - x} \\[1ex]
+&= \frac{(\theta - x)^2}{2(\theta - x)} \\[1ex]
+&= \frac{\theta - x}{2} 
+\end{align*}
+This value also makes sense.  It is the distance between $x$ and the midpoint of $x$ and $\theta$.  In other words:
+$$
+\frac{x+\theta}{2} - x = \frac{\theta - x}{2}
+$$
 
 # Problem 2.15
 Based on data reported to the International Bone Marrow Transplant Registry, the survival function for a person given an HLA- identical sibling transplant for refractory multiple myeloma is given by
