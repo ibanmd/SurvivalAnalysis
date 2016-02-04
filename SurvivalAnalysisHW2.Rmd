@@ -1,0 +1,50 @@
+---
+title: "Survival HW 2"
+author: "Mario Ibanez"
+date: "February 3, 2016"
+output: pdf_document
+---
+
+```{r}
+library(knitr)
+library(survival)
+```
+
+With censoring:
+
+```{r}
+data <- data.frame(ID = c(1:21),
+                   Time = c(10, 7, 32, 23, 22, 6, 16, 34, 32, 25, 
+                            11, 20, 19, 6, 17, 35, 6, 13, 9, 6, 10),
+                   Censor = c(1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
+                              1, 0, 0, 1, 1, 0, 0, 0))
+attach(data)
+
+data.surv <- survfit(Surv(time = Time, event = Censor) ~ 1, data = data)
+
+kable(data.frame(summary(data.surv)[sapply(summary(data.surv), length)==7]))
+plot(data.surv)
+
+H.hat <- -log(data.surv$surv)
+H.hat <- c(H.hat, tail(H.hat, 1))
+
+plot(H.hat ~ c(data.surv$time, 40))
+```
+
+Without censoring:
+```{r}
+# subset to only have uncensored data
+data <- data[Censor==1,]
+
+data.surv <- survfit(Surv(time = Time, event = Censor) ~ 1, data = data)
+
+kable(data.frame(summary(data.surv)[sapply(summary(data.surv), length)==7]))
+plot(data.surv)
+
+H.hat <- -log(data.surv$surv)
+H.hat <- c(H.hat, tail(H.hat, 1))
+
+plot(H.hat ~ c(data.surv$time, 40))
+
+```
+

@@ -152,7 +152,7 @@ And then using the fact that $h(x) = \frac{f(x)}{S(x)}$ we have:
 $$
 h(x) = 
 \begin{cases} 
-0                                                              &\mbox{if } x < G \\ 
+0                                  &\mbox{if } x < G \\ 
 \lambda \alpha (x-G)^{\alpha - 1}  &\mbox{if } x \ge G 
 \end{cases}
 $$
