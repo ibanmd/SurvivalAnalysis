@@ -255,19 +255,19 @@ mean_high <- round(integrate(high_function, 0, 2081, rel.tol = 0.1)$val, 1)
 ```
 
 ```{r echo=FALSE}
-est_variance <- function(surv){
+est_variance <- function(surv, t2){
   table <- summary(surv)
   surv_function <- stepfun(summary(surv)$time, c(1, (summary(surv))$surv))
   sum <- 0
   for(i in (1:length(table$time))){
-    sum = sum + (((integrate(surv_function, table[[2]][i], 2081, subdivisions = 10000))$val)^2 * table[[4]][i] / (table[[3]])[i] / ((table[[3]])[i]-(table[[4]])[i]))
+    sum = sum + (((integrate(surv_function, table[[2]][i], t2, subdivisions = 10000))$val)^2 * table[[4]][i] / (table[[3]])[i] / ((table[[3]])[i]-(table[[4]])[i]))
   }
   
   return(sqrt(sum))
 }
-se_all <- round(est_variance(KM_all), 1)
-se_low <- round(est_variance(KM_low), 1)
-se_high <- round(est_variance(KM_high), 1)
+se_all <- round(est_variance(KM_all, 2081), 1)
+se_low <- round(est_variance(KM_low, 2081), 1)
+se_high <- round(est_variance(KM_high, 2081), 1)
 ```
 
 Here is a table of my results:  
@@ -583,78 +583,383 @@ kable(round(print_HW_bands(HW.bands(high$t2, high$d3, 100, 400, 1.3155)), 3))
 
 Seems to me that the *AML high-risk* group is in the most danger of an early relapse or death.  The *AML low-risk* group seems to be most well off in terms of not dying or relapsing.
 
+$\pagebreak$
 
 # 4.2)
 
 ### A study was conducted on the effects of ploidy on the prognosis of patients with cancers of the mouth.  Patients were selected who had a paraffin-embedded sample of the cancerous tissue taken at the time of surgery.  Follow-up survival data was obtained on each patient.  
 
-### a) Estimate the survival functions and their standard errors for both the diploid and aneuploid groups.  
-dfghdfgh    
+```{r echo=FALSE}
+data(tongue)
+tongue$tumor[tongue$type==1] <- "Aneuploid"
+tongue$tumor[tongue$type==2] <- "Diploid"
 
+KM_ane <- survfit(Surv(time = time, event = delta) ~ 1, data = tongue[tongue$type==1,])
+KM_dip <- survfit(Surv(time = time, event = delta) ~ 1, data = tongue[tongue$type==2,])
+```
+
+### a) Estimate the survival functions and their standard errors for both the diploid and aneuploid groups.  
 
 ### b) Estimate the cumulative hazard rates and their standard errors for both the diploid and aneuploid groups.  
-dfghfdg    
-
 
 ### c) Provide a crude estimate of the hazard rate for each group based on the estimates obtained in the exercise.   
 
-dfghdfh     
+Like the previous problem, I'll do parts (a), (b) and (c) all together.  And I'll be using some of the same functions/code I used for the previous problem:
 
+### Diploid Group  
+
+```{r echo=FALSE, eval=FALSE}
+kable(table_maker(KM_dip)[,c(1:7)], digits = 4)
+```
+
+| $t_i$|$Y_i$ | $d_i$  | $\hat{S}(t_i)$ | $\sqrt{\hat{V}[\hat{S}(t_i)]}$ | $\widetilde{H}(t_i)$ | $\sigma_H(t_i)$ |
+|----:|------:|-------:|------:|-------:|------:|------:|
+|    1|     28|       1| 0.9643|  0.0351| 0.0357| 0.0357|
+|    3|     27|       1| 0.9286|  0.0487| 0.0728| 0.0515|
+|    4|     26|       1| 0.8929|  0.0585| 0.1112| 0.0642|
+|    5|     25|       2| 0.8214|  0.0724| 0.1912| 0.0856|
+|    8|     23|       1| 0.7857|  0.0775| 0.2347| 0.0960|
+|   12|     21|       1| 0.7483|  0.0824| 0.2823| 0.1072|
+|   13|     20|       1| 0.7109|  0.0863| 0.3323| 0.1183|
+|   18|     19|       1| 0.6735|  0.0895| 0.3849| 0.1294|
+|   23|     18|       1| 0.6361|  0.0921| 0.4405| 0.1409|
+|   26|     17|       1| 0.5986|  0.0939| 0.4993| 0.1526|
+|   27|     16|       1| 0.5612|  0.0952| 0.5618| 0.1649|
+|   30|     15|       1| 0.5238|  0.0959| 0.6285| 0.1779|
+|   42|     14|       1| 0.4864|  0.0961| 0.6999| 0.1917|
+|   56|     13|       1| 0.4490|  0.0957| 0.7768| 0.2066|
+|   62|     12|       1| 0.4116|  0.0948| 0.8602| 0.2227|
+|   69|     10|       1| 0.3704|  0.0938| 0.9602| 0.2442|
+|  104|      8|       2| 0.2778|  0.0904| 1.2102| 0.3014|
+|  112|      5|       1| 0.2222|  0.0877| 1.4102| 0.3618|
+|  129|      4|       1| 0.1667|  0.0815| 1.6602| 0.4397|
+|  181|      2|       1| 0.0833|  0.0717| 2.1602| 0.6659|
+
+$\pagebreak$
+
+### Aneuploid Group  
+
+```{r echo=FALSE, eval=FALSE}
+kable(table_maker(KM_ane)[,c(1:7)], digits = 4)
+```
+
+| $t_i$|$Y_i$ | $d_i$  | $\hat{S}(t_i)$ | $\sqrt{\hat{V}[\hat{S}(t_i)]}$ | $\widetilde{H}(t_i)$ | $\sigma_H(t_i)$ |
+|----:|------:|-------:|------:|-------:|------:|------:|
+|    1|     52|       1| 0.9808|  0.0190| 0.0192| 0.0192|
+|    3|     51|       2| 0.9423|  0.0323| 0.0584| 0.0337|
+|    4|     49|       1| 0.9231|  0.0370| 0.0789| 0.0394|
+|   10|     48|       1| 0.9038|  0.0409| 0.0997| 0.0446|
+|   13|     47|       2| 0.8654|  0.0473| 0.1422| 0.0538|
+|   16|     45|       2| 0.8269|  0.0525| 0.1867| 0.0623|
+|   24|     43|       1| 0.8077|  0.0547| 0.2099| 0.0665|
+|   26|     42|       1| 0.7885|  0.0566| 0.2338| 0.0706|
+|   27|     41|       1| 0.7692|  0.0584| 0.2581| 0.0747|
+|   28|     40|       1| 0.7500|  0.0600| 0.2831| 0.0788|
+|   30|     39|       2| 0.7115|  0.0628| 0.3344| 0.0867|
+|   32|     37|       1| 0.6923|  0.0640| 0.3615| 0.0909|
+|   41|     36|       1| 0.6731|  0.0651| 0.3892| 0.0950|
+|   51|     35|       1| 0.6538|  0.0660| 0.4178| 0.0992|
+|   65|     33|       1| 0.6340|  0.0669| 0.4481| 0.1037|
+|   67|     32|       1| 0.6142|  0.0677| 0.4794| 0.1083|
+|   70|     31|       1| 0.5944|  0.0683| 0.5116| 0.1130|
+|   72|     30|       1| 0.5746|  0.0689| 0.5449| 0.1179|
+|   73|     29|       1| 0.5548|  0.0693| 0.5794| 0.1228|
+|   77|     27|       1| 0.5342|  0.0697| 0.6165| 0.1283|
+|   91|     19|       1| 0.5061|  0.0715| 0.6691| 0.1386|
+|   93|     18|       1| 0.4780|  0.0728| 0.7247| 0.1494|
+|   96|     16|       1| 0.4481|  0.0741| 0.7872| 0.1619|
+|  100|     14|       1| 0.4161|  0.0754| 0.8586| 0.1770|
+|  104|     12|       1| 0.3814|  0.0767| 0.9419| 0.1956|
+|  157|      5|       1| 0.3051|  0.0918| 1.1419| 0.2797|
+|  167|      4|       1| 0.2289|  0.0954| 1.3919| 0.3752|
+
+
+Below is a plot of the Kaplan-Meier estimates for the two groups:
+
+$\smallskip$
+
+```{r echo=FALSE}
+tongue$tumor <- as.factor(tongue$tumor)
+plot(survfit(Surv(time, delta) ~ tumor, data = tongue),
+     lty = c(2, 1), xlab = "Time (Weeks)",
+     ylab = "Estimated Survival Curve", 
+     col = c("red", "blue"),
+     main = "Kaplan-Meier Curves")
+legend("topright", c("Aneuploid", "Diploid"),
+       lty = c(2, 1), inset = 0.01, col = c("red", "blue"))
+```
+
+$\smallskip$
+
+And below is a plot of the estimated cumulative hazard curves for the two groups.  Note, these curves are not the Nelson-Aalen estimators $\widetilde{H}(t_i)$.  These are the transformations of the Kaplan-Meier estimates: $\hat{H}(t_i) = -ln(\hat{S}(t_i)$.  Since the sample sizes are not small and the estimators are asymptotically equivalent, these curves should look approximately like the Nelson-Aalen curves.
+
+$\smallskip$
+
+```{r echo=FALSE}
+plot(survfit(Surv(time, delta) ~ tumor, data = tongue),
+     lty = c(2, 1), xlab = "Time (Weeks)",
+     ylab = "Estimated Cumulative Hazard", 
+     col = c("red", "blue"),
+     main = "Estimated Cumulative Hazard Curves",
+     fun = "cumhaz")
+legend("bottomright", c("Aneuploid", "Diploid"),
+       lty = c(2, 1), inset = 0.01, col = c("red", "blue"))
+```
+
+$\smallskip$
+
+Both cumulative hazard curves appear somewhat linear for the first 180 weeks approximately.  Using this time span, we can approximate the hazard rate for each group during this time span.  The units will be in events per week:  
+
+### Estimated hazard rate for diploid group:
+
+$$
+\frac{2.16-0.0357}{181-1} = 0.01180167 \mbox{ events per week}
+$$
+
+### Estimated hazard rate for aneuploid group:
+
+$$
+\frac{1.3919-0.0192}{167-1} = 0.008269277 \mbox{ events per week}
+$$
 
 ### d) Provide an estimate of the mean time to death, and find a 95% confidence interval for the mean survival time for both the diploid and aneuploid groups.   
- dfhfgh    
- 
- 
+
+I did this problem similar to the same part of the previous problem.  In this problem I will estimate up until 250 weeks.
+
+```{r echo=FALSE}
+ane_function <- stepfun(summary(KM_ane)$time, c(1, (summary(KM_ane))$surv))
+dip_function <- stepfun(summary(KM_dip)$time, c(1, (summary(KM_dip))$surv))
+
+mean_ane <- round(integrate(ane_function, 0, 250, rel.tol = 0.1)$val, 1)
+mean_dip <- round(integrate(dip_function, 0, 250, rel.tol = 0.1)$val, 1)
+```
+
+```{r echo=FALSE}
+se_ane <- round(est_variance(KM_ane, 250), 1)
+se_dip <- round(est_variance(KM_dip, 250), 1)
+```
+
+Here is a table of my results:  
+
+|Group         | Mean Restricted to 250 weeks  |   Standard Error  | 95% Confidence Interval                                     |
+|-------------:|:-----------------------------:|------------------:|------------------------------------------------------------:|
+|Aneuploid     | $`r mean_ane`$                | $`r se_ane`$      |[$`r mean_ane -1.96*se_ane`$, $`r mean_ane+1.96*se_ane`$]    |
+|Diploid       | $`r mean_dip`$                | $`r se_dip`$      |[$`r mean_dip-1.96*se_dip`$, $`r mean_dip+1.96*se_dip`$]     |
+
+
+Again, these are just estimations.  
 
 ### e) Estimate the median time to death, and find a 95% confidence interval for the median survival time for both the diploid and aneuploid groups.  
-dfghfgh    
 
+### Diploid Group
+
+```{r echo=FALSE}
+kable(table_4_7(table_maker(KM_dip)))   
+```
+
+The estimated median is 42 weeks. In the final three columns, we look for values that are between -1.96 and 1.96.  The 95% confidence intervals for the median are:
+
+| Type         |  Interval |
+|:-------------|:----------|
+| Linear       | [23, 69]  |
+| Log          | [18, 69]  |
+| Arcsine      | [18, 69]  |
+
+$\pagebreak$
+
+### Aneuploid Group
+
+```{r echo=FALSE}
+kable(table_4_7(table_maker(KM_ane)))   
+```
+
+The estimated median is 93 weeks.  In the final three columns, we look for values that are between -1.96 and 1.96.  The 95% confidence intervals for the median are:
+
+| Type         |  Interval  |
+|:-------------|:-----------|
+| Linear       | [67, 104]  |
+| Log          | [65, 104]  |
+| Arcsine      | [67, 104]  |
+
+$\pagebreak$
 
 # 4.4)
 
 ### The following table contains data on the survival times of twenty-five patients with inoperative lung cancer entered on a study between November 1, 1979 and December 23, 1979.  Complete follow-up was obtained on all patients so that the exact date of death was known.  The study had on interim analysis conducted on March 3, 1980, when only 13 patients had died.  
 
+```{r echo=FALSE}
+data(lung, package = "KMsurv")
+
+KM_lung1 <- survfit(Surv(time = time2, event = death2) ~ 1, data = lung)
+```
+
+```{r echo=FALSE, eval=FALSE}
+kable(table_maker(KM_lung1)[,c(1:7)], digits = 4)
+```
+
 ### a) Estimate the survival function based on the available sample information at the time of the interim analysis on 3/31/80.  Provide an estimate of the standard error of your estimate.   
 
-dfghfgh    
+
+| $t_i$|$Y_i$ | $d_i$  | $\hat{S}(t_i)$ | $\sqrt{\hat{V}[\hat{S}(t_i)]}$ | $\widetilde{H}(t_i)$ | $\sigma_H(t_i)$ |   
+|----:|------:|-------:|------:|-------:|------:|------:|
+|   22|     25|       1| 0.9600|  0.0392| 0.0400| 0.0400|
+|   27|     24|       1| 0.9200|  0.0543| 0.0817| 0.0578|
+|   50|     23|       1| 0.8800|  0.0650| 0.1251| 0.0723|
+|   68|     22|       1| 0.8400|  0.0733| 0.1706| 0.0854|
+|  134|     17|       1| 0.7906|  0.0840| 0.2294| 0.1037|
+|  136|     16|       1| 0.7412|  0.0922| 0.2919| 0.1211|
+|  139|     15|       1| 0.6918|  0.0984| 0.3586| 0.1382|
+|  144|     14|       1| 0.6424|  0.1030| 0.4300| 0.1556|
+|  193|     12|       1| 0.5888|  0.1074| 0.5134| 0.1765|
+|  203|     10|       1| 0.5299|  0.1117| 0.6134| 0.2029|
+|  210|      9|       1| 0.4711|  0.1137| 0.7245| 0.2313|
+|  248|      6|       1| 0.3925|  0.1188| 0.8911| 0.2851|
+|  304|      3|       1| 0.2617|  0.1330| 1.2245| 0.4386|
+
+
+Below is a plot of the Kaplan-Meier Curve:
+
+$\smallskip$
+
+```{r echo=FALSE}
+plot(KM_lung1,
+     xlab = "Time (Days)",
+     ylab = "Estimated Survival Curve",
+     main = "Kaplan-Meier Curve")
+```
+
+$\smallskip$
 
 
 ### b) Use the Brown, Hollandar, and Kowar technique (Practical Note 3 of section 4.2) to complete the right-hand tail of the product-limit estimate found in part a.   
 
-dfhdffh   
+The largest observed time in this set of data is 320 days and it is a censored observation.  Thus, the estimate of the curve after $t_{max}=320$ is:
 
+$$
+\hat{S}(t) = e^{t \frac{ln(\hat{S}(320))}{320}}
+$$
+
+Since $\hat{S}(320) = 0.2617$, this simplifies to:
+
+$$
+\hat{S}(t) = exp(-0.004189239(t)) \mbox{  for } t \ge t_{max}
+$$
+
+Below is the same plot from above but with the complete right hand tail.
+
+```{r echo=FALSE}
+plot(KM_lung1,
+     xlab = "Time (Days)",
+     ylab = "Estimated Survival Curve",
+     main = "Kaplan-Meier Curve",
+     xlim = c(0, 800))
+
+lines(c(320:800), exp(-0.004189239*c(320:800)) , col = "red")
+```
+
+$\pagebreak$
 
 ### c) Using the complete follow-up on each patient, compute the estimate of the survival function and an estimate of its standard error.  Compare this estimate to that found in part a.  
-  
- dfghfdgh    
- 
+
+```{r echo=FALSE}  
+KM_lung2 <- survfit(Surv(time = time, event = death) ~ 1, data = lung)
+```
+
+```{r echo=FALSE, eval=FALSE}
+kable(table_maker(KM_lung2)[,c(1:7)], digits = 4)
+```
+
+
+| $t_i$|$Y_i$ | $d_i$  | $\hat{S}(t_i)$ | $\sqrt{\hat{V}[\hat{S}(t_i)]}$ | $\widetilde{H}(t_i)$ | $\sigma_H(t_i)$ |   
+|----:|------:|-------:|----:|-------:|------:|------:|
+|   22|     25|       1| 0.96|  0.0392| 0.0400| 0.0400|
+|   27|     24|       1| 0.92|  0.0543| 0.0817| 0.0578|
+|   50|     23|       1| 0.88|  0.0650| 0.1251| 0.0723|
+|   68|     22|       1| 0.84|  0.0733| 0.1706| 0.0854|
+|  101|     21|       1| 0.80|  0.0800| 0.2182| 0.0978|
+|  134|     20|       1| 0.76|  0.0854| 0.2682| 0.1098|
+|  136|     19|       1| 0.72|  0.0898| 0.3209| 0.1218|
+|  139|     18|       1| 0.68|  0.0933| 0.3764| 0.1339|
+|  144|     17|       1| 0.64|  0.0960| 0.4352| 0.1462|
+|  191|     16|       1| 0.60|  0.0980| 0.4977| 0.1590|
+|  193|     15|       1| 0.56|  0.0993| 0.5644| 0.1724|
+|  203|     14|       1| 0.52|  0.0999| 0.6358| 0.1866|
+|  210|     13|       1| 0.48|  0.0999| 0.7127| 0.2019|
+|  224|     12|       1| 0.44|  0.0993| 0.7961| 0.2184|
+|  248|     11|       1| 0.40|  0.0980| 0.8870| 0.2365|
+|  256|     10|       1| 0.36|  0.0960| 0.9870| 0.2568|
+|  304|      9|       1| 0.32|  0.0933| 1.0981| 0.2798|
+|  308|      8|       1| 0.28|  0.0898| 1.2231| 0.3065|
+|  441|      7|       1| 0.24|  0.0854| 1.3660| 0.3381|
+|  482|      6|       1| 0.20|  0.0800| 1.5326| 0.3770|
+|  511|      5|       1| 0.16|  0.0733| 1.7326| 0.4267|
+|  561|      4|       1| 0.12|  0.0650| 1.9826| 0.4946|
+|  580|      3|       1| 0.08|  0.0543| 2.3160| 0.5964|
+|  683|      2|       1| 0.04|  0.0392| 2.8160| 0.7783|
+|  724|      1|       1| 0.00|     NaN| 3.8160| 1.2672|
+
+
+Below is a plot of the Kaplan-Meier Curve:
+
+$\smallskip$
+
+```{r echo=FALSE}
+plot(KM_lung2,
+     xlab = "Time (Days)",
+     ylab = "Estimated Survival Curve",
+     main = "Kaplan-Meier Curve")
+```
+
+$\smallskip$ 
+
+
 ### d) Estimate the mean time to death, restricted to 724 days, based on the product-limit estimator found in part a.   
   
-dfghdfh   
+```{r echo=FALSE}
+lung1_function <- stepfun(c(summary(KM_lung1)$time, 800), c(1, (summary(KM_lung1))$surv, 0.2617))
+mean_lung1 <- round(integrate(lung1_function, 0, 724, rel.tol = 0.1)$val, 1)
+```
+
+```{r echo=FALSE}
+se_lung1 <- round(est_variance(KM_lung1, 724), 1)
+```
+
+Here is a table of my results:  
+
+|Group         | Mean Restricted to 724 Days| Standard Error  | Confidence Interval                                              |
+|-------------:|:--------------------------:|----------------:|-----------------------------------------------------------------:|
+|Lung cancer   | $`r mean_lung1`$           | $`r se_lung1`$  | [$`r mean_lung1-1.96*se_lung1`$, $`r mean_lung1+1.96*se_lung1`$] |
+
 
 ### e) Estimate the mean time to death by finding the area under the survival curve found in part c.  Find the standard error of your estimate.   
   
-dfghdfh   
+```{r echo=FALSE}
+lung2_function <- stepfun(summary(KM_lung2)$time, c(1, (summary(KM_lung2))$surv))
+mean_lung2 <- round(integrate(lung2_function, 0, 724, rel.tol = 0.1)$val, 1)
+```
+
+```{r echo=FALSE}
+est_variance2 <- function(surv, t2){
+  table <- summary(surv)
+  surv_function <- stepfun(summary(surv)$time, c(1, (summary(surv))$surv))
+  sum <- 0
+  for(i in (1:(length(table$time)-1))){
+    sum = sum + (((integrate(surv_function, table[[2]][i], t2, subdivisions = 10000))$val)^2 * table[[4]][i] / (table[[3]])[i] / ((table[[3]])[i]-(table[[4]])[i]))
+  }
+  
+  return(sqrt(sum))
+}
+se_lung2 <- round(est_variance2(KM_lung2, 724), 1)
+```
+
+Here is a table of my results:  
+
+|Group         | Mean Restricted to 724 Days| Standard Error  | Confidence Interval                                              |
+|-------------:|:--------------------------:|----------------:|-----------------------------------------------------------------:|
+|Lung cancer   | $`r mean_lung2`$           | $`r se_lung2`$  | [$`r mean_lung2-1.96*se_lung2`$, $`r mean_lung2+1.96*se_lung2`$] |
+
 
 ### f) Compute the usual estimate of the time to death based on complete follow-up data by finding the arithmetic mean of the complete follow-up data. Find the standard error of this estimate in the usual way as the sample standard deviation divided by the square root of the sample size. Compare your answers to those obtained in part e.    
 
-dfhdfh    
+The mean is `r mean(lung$time)` and the standard error is `r sd(lung$time)/sqrt(length(lung$time))`.  These values are almost identical to the values found in part (e).  
 
-
-# Code
-
-## 4.1)
-
-```{r eval=FALSE}
-# Code for 4.1)
-```
-
-## 4.2)
-```{r eval=FALSE}
-# Code for 4.2)
-```
-
-## 4.4)
-```{r eval=FALSE}
-# Code for 4.4)
-```
