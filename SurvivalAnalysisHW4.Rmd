@@ -361,19 +361,6 @@ All of these confidence intervals and medians agree with those mentioned in the 
 
 ### f) Find 95% confidence intervals for the survival functions at 300 days post transplant for both the AML low-risk and AML high-risk groups, using the log and arcsine-square root transformed formulas.   
 
-These were found with *R* code:
-
-```{r echo=FALSE}
-sig_squared <- function(surv, t){
-  table <- table_maker(surv)
-  i <- match(TRUE, table[,1] < t)
-  sig_squared <- table[i, 5]^2 / table[i, 4]^2
-}
-```
-
-
-### g) Find 95% EP confidence bands for the survival functions over the range 100–400 days post-transplant for both the AML low risk and AML high risk groups using the linear, log-transformed, and arcsine-transformed formulas.   
-
 ```{r echo=FALSE}
 source(file = "conf_bands.R")
 print_EP_bands <- function(band_output){
@@ -390,6 +377,74 @@ print_EP_bands <- function(band_output){
   return(output)
 }
 ```
+
+### AML low-risk
+
+For this group, we can get the values we need from the following table (the complete version of this table is actually in the next problem):
+
+| $t_i$|$\hat{S}(t_i)$|$\sqrt{\hat{V}[\hat{S}(t_i)]}$|$\sigma_S^2$|
+|----:|---------:|---------:|---------:|
+|  288| 0.7777778| 0.0565750| 0.0052910|
+|  381| 0.7592593| 0.0581799| 0.0058717|
+|  390| 0.7407407| 0.0596353| 0.0064815|
+|  400| 0.7407407| 0.0596353| 0.0064815|
+
+The values we need are $\hat{S}(300) = 0.7777778$ and $\sigma_S^2(300) = 0.0052910$, or $\sigma_S(300) = 0.07273926$
+
+```{r echo=FALSE}
+part_f <- function(shat, sigmas){
+  theta <- exp((1.96 * sigmas)/(log(shat)))
+  logleft <- shat^(1/theta)
+  logright <- shat^theta
+  arcleft <- sin(max(0, asin(sqrt(shat)) - 0.5*1.96*sigmas*sqrt((shat)/(1-shat))))^2
+  arcright <- sin(min(pi/2, asin(sqrt(shat)) + 0.5*1.96*sigmas*sqrt((shat)/(1-shat))))^2
+  return(c(logleft, logright, arcleft, arcright))
+}
+
+a <- round(part_f(0.7777778, 0.07273926), 4)
+```
+
+The table of results is:  
+
+|Group & Interval Type         | Interval            |
+|:-----------------------------|:--------------------|
+| AML low-risk, Log            | [`r a[1]`, `r a[2]`]
+| AML low-risk, Arcsine        | [`r a[3]`, `r a[4]`]
+
+
+### AML high-risk
+
+For this group, we can get the values we need from the following table (the complete version of this table is actually in the next problem):
+
+| $t_i$|$\hat{S}(t_i)$|$\sqrt{\hat{V}[\hat{S}(t_i)]}$|$\sigma_S^2$|
+|----:|---------:|---------:|---------:|
+|  242| 0.4666667| 0.0743698| 0.0253968|
+|  268| 0.4444444| 0.0740741| 0.0277778|
+|  273| 0.4222222| 0.0736283| 0.0304094|
+|  318| 0.4000000| 0.0730297| 0.0333333|
+|  363| 0.3777778| 0.0722744| 0.0366013|
+|  390| 0.3555556| 0.0713576| 0.0402778|
+|  400| 0.3555556| 0.0713576| 0.0402778|
+
+The values we need are $\hat{S}(300) = 0.4222222$ and $\sigma_S^2(300) = 0.0304094$, or $\sigma_S(300) = 0.1743829$
+
+```{r echo=FALSE}
+shat <- 0.4222222
+sigmas <- 0.1743829
+b <- round(part_f(0.4222222, 0.1743829), 4)
+```
+
+The table of results is:  
+
+|Group & Interval Type         | Interval            |
+|:-----------------------------|:--------------------|
+| AML high-risk Log            | [`r b[1]`, `r b[2]`]
+| AML high-risk Arcsine        | [`r b[3]`, `r b[4]`]
+
+
+### g) Find 95% EP confidence bands for the survival functions over the range 100–400 days post-transplant for both the AML low risk and AML high risk groups using the linear, log-transformed, and arcsine-transformed formulas.   
+
+I used a bunch of *R* code to get these results:  
 
 ### AML low-risk
 
@@ -450,11 +505,83 @@ kable(round(print_EP_bands(EP.bands(high$t2, high$d3, 100, 400, 2.6811)), 3))
 
 ### h) Find 95% HW confidence bands for the survival functions over the range 100–400 days post-transplant for both the AML low risk and AML high risk groups using the linear, log-transformed, and arcsine-transformed formulas.   
 
+```{r echo=FALSE}
+print_HW_bands <- function(band_output){
+  output <- data.frame(time = band_output$time,
+                       shat = band_output$PLE,
+                       sigma2 = band_output$sigma2,
+                       lin_low = band_output$linSL,
+                       lin_hi = band_output$linSU,
+                       log_lo = band_output$logSL,
+                       log_hi = band_output$logSU,
+                       arc_low = band_output$arcSL,
+                       arc_hi = band_output$arcSU)
+  return(output)
+}
+```
 
+### AML low-risk
+
+The values for $a_L$ and $a_U$ are $a_L$ = `r aLaU(low$t2, low$d3, 100, 400)[1]` and $a_U$ = `r aLaU(low$t2, low$d3, 100, 400)[2]`.  These were rounded to the nearest values found in the table.  From the table, this means that $c_{0.05} = 1.2603$.  Then some behind the scenes *R* code prints out a table similar to the table from the textbook.  Note, "L" and "R" mean the left and right endpoints of the interval.  
+
+| $t_i$|$\hat{S}(t_i)$|$\sigma_S^2$|Linear L|Linear R|Log L|Log R|Arcsine L|Arcsine R|
+|----:|-----:|------:|-------:|------:|------:|------:|-------:|------:|
+|  100| 0.889|  0.002|   0.717|  1.000|  0.545|  0.977|   0.669|  0.996|
+|  105| 0.870|  0.003|   0.699|  1.000|  0.563|  0.967|   0.659|  0.987|
+|  211| 0.852|  0.003|   0.680|  1.000|  0.570|  0.955|   0.647|  0.977|
+|  219| 0.833|  0.004|   0.662|  1.000|  0.569|  0.943|   0.633|  0.964|
+|  248| 0.815|  0.004|   0.643|  0.986|  0.564|  0.929|   0.619|  0.951|
+|  272| 0.796|  0.005|   0.625|  0.968|  0.556|  0.915|   0.603|  0.936|
+|  288| 0.778|  0.005|   0.606|  0.949|  0.546|  0.901|   0.588|  0.921|
+|  381| 0.759|  0.006|   0.588|  0.931|  0.535|  0.886|   0.572|  0.906|
+|  390| 0.741|  0.006|   0.569|  0.912|  0.522|  0.870|   0.555|  0.890|
+|  400| 0.741|  0.006|   0.569|  0.912|  0.522|  0.870|   0.555|  0.890|
+
+
+And below is a plot comparing the three confidence bands:  
+$\smallskip$
+
+```{r eval=TRUE, results='hide', echo=FALSE}
+kable(round(print_HW_bands(HW.bands(low$t2, low$d3, 100, 400, 1.2603)), 3))
+```
+   
+   
+### AML high-risk
+
+The values for $a_L$ and $a_U$ are $a_L$ = `r aLaU(high$t2, high$d3, 100, 400)[1]` and $a_U$ = `r aLaU(high$t2, high$d3, 100, 400)[2]`.  These were rounded to the nearest values found in the table.  From the table, this means that $c_{0.05} = 1.3155$.  Then some behind the scenes *R* code prints out a table similar to the table from the textbook.  Note, "L" and "R" mean the left and right endpoints of the interval.  
+
+| $t_i$|$\hat{S}(t_i)$|$\sigma_S^2$|Linear L|Linear R|Log L|Log R|Arcsine L|Arcsine R|
+|----:|-----:|------:|-------:|------:|------:|------:|-------:|------:|
+|  100| 0.689|  0.010|   0.493|  0.885|  0.449|  0.841|   0.482|  0.862|
+|  105| 0.667|  0.011|   0.471|  0.863|  0.433|  0.822|   0.462|  0.843|
+|  113| 0.644|  0.012|   0.448|  0.841|  0.416|  0.803|   0.442|  0.823|
+|  115| 0.622|  0.013|   0.426|  0.818|  0.398|  0.783|   0.422|  0.803|
+|  120| 0.600|  0.015|   0.404|  0.796|  0.380|  0.764|   0.401|  0.783|
+|  157| 0.578|  0.016|   0.382|  0.774|  0.361|  0.744|   0.381|  0.763|
+|  162| 0.556|  0.018|   0.359|  0.752|  0.342|  0.724|   0.360|  0.742|
+|  164| 0.533|  0.019|   0.337|  0.729|  0.324|  0.705|   0.340|  0.722|
+|  168| 0.511|  0.021|   0.315|  0.707|  0.305|  0.685|   0.319|  0.701|
+|  183| 0.489|  0.023|   0.293|  0.685|  0.286|  0.665|   0.299|  0.681|
+|  242| 0.467|  0.025|   0.271|  0.663|  0.266|  0.645|   0.278|  0.660|
+|  268| 0.444|  0.028|   0.248|  0.641|  0.247|  0.625|   0.258|  0.640|
+|  273| 0.422|  0.030|   0.226|  0.618|  0.228|  0.605|   0.237|  0.619|
+|  318| 0.400|  0.033|   0.204|  0.596|  0.209|  0.585|   0.217|  0.599|
+|  363| 0.378|  0.037|   0.182|  0.574|  0.190|  0.565|   0.197|  0.578|
+|  390| 0.356|  0.040|   0.159|  0.552|  0.172|  0.545|   0.177|  0.558|
+|  400| 0.356|  0.040|   0.159|  0.552|  0.172|  0.545|   0.177|  0.558|
+
+
+And below is a plot comparing the three confidence bands:  
+$\smallskip$
+
+```{r eval=TRUE, results='hide', echo=FALSE}
+kable(round(print_HW_bands(HW.bands(high$t2, high$d3, 100, 400, 1.3155)), 3))
+```
 
 
 ### i) Based on the results above and those discussed in Example 4.2 and its continuations, how do the survival experiences of the ALL, AML low risk, and AML high risk groups compare?   
-dfghdfgh   
+
+Seems to me that the *AML high-risk* group is in the most danger of an early relapse or death.  The *AML low-risk* group seems to be most well off in terms of not dying or relapsing.
 
 
 # 4.2)

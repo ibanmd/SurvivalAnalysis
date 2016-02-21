@@ -130,6 +130,8 @@ HW.bands <- function(otime,censor,t1,t2,kalpha) {
   n <- length(otime)
   ples <- summary(survfit(Surv(otime, censor)~1))
   dtime <- ples$time
+  realt1 <- t1
+  realt2 <- t2
   t1 <- max(dtime[t1-dtime >= 0])
   t2 <- max(dtime[t2-dtime >= 0])
   rng <- dtime>=t1 & dtime<=t2
@@ -174,10 +176,15 @@ HW.bands <- function(otime,censor,t1,t2,kalpha) {
   lines(time1[-1],logSU1,lty=2, col="green")
   lines(time1[-1],arcSL1,lty=4, col="red")
   lines(time1[-1],arcSU1,lty=4, col="red")
-  legend(min(time1), 0.2, c("linear", "log", "arcsin"),
+  legend(min(time1), 0.3, c("linear", "log", "arcsin"),
          col=c("blue", "green", "red"), lty=2:4)
   output <- list(linSL=linSL, linSU=linSU, logSL=logSL, logSU=logSU,
-                 arcSL=arcSL, arcSU=arcSU, PLE=survf, sigma2=sigma^2)
+                 arcSL=arcSL, arcSU=arcSU, PLE=survf, sigma2=sigma^2, 
+                 time = dtime, surv = survf)
+  output <- data.frame(output)
+  output[length(output[,1])+1,] <- output[length(output[,1]),]
+  output$time[length(output$time)] <- realt2
+  output$time[1] <- realt1
   return(output)
 }
 
