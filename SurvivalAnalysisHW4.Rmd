@@ -680,6 +680,8 @@ $\smallskip$
 
 ```{r echo=FALSE}
 tongue$tumor <- as.factor(tongue$tumor)
+ane <- tongue[tongue$tumor == "Aneuploid", ]
+dip <- tongue[tongue$tumor == "Diploid", ]
 plot(survfit(Surv(time, delta) ~ tumor, data = tongue),
      lty = c(2, 1), xlab = "Time (Weeks)",
      ylab = "Estimated Survival Curve", 
@@ -761,7 +763,7 @@ The estimated median is 42 weeks. In the final three columns, we look for values
 
 | Type         |  Interval |
 |:-------------|:----------|
-| Linear       | [23, 69]  |
+| Linear       | [18, 69]  |
 | Log          | [18, 69]  |
 | Arcsine      | [18, 69]  |
 
@@ -779,8 +781,238 @@ The estimated median is 93 weeks.  In the final three columns, we look for value
 |:-------------|:-----------|
 | Linear       | [67, 104]  |
 | Log          | [65, 104]  |
-| Arcsine      | [67, 104]  |
+| Arcsine      | [65, 104]  |
 
+$\pagebreak$
+
+### f) Using the log and arcsine-square root transformed confidence intervals, find a 95% confidence interval for the survival function, at 26 weeks, for both the diploid and aneuploid groups.  
+
+
+### Diploid
+
+For this group, we can get the values we need from the following table (the complete version of this table is actually in the next problem):
+
+```{r eval=FALSE, results='hide', echo=FALSE}
+kable(round(print_EP_bands(EP.bands(otime = dip$time, censor = dip$delta, 10, 400, 2.5949)), 3)[,c(1:4)])
+```
+
+
+| $t_i$|$\hat{S}(t_i)$|$\sqrt{\hat{V}[\hat{S}(t_i)]}$|$\sigma_S^2$|
+|----:|-----:|-----:|------:|
+|   10| 0.786| 0.078|  0.010|
+|   12| 0.748| 0.082|  0.012|
+|   13| 0.711| 0.086|  0.015|
+|   18| 0.673| 0.090|  0.018|
+|   23| 0.636| 0.092|  0.021|
+|   26| 0.599| 0.094|  0.025|
+|   27| 0.561| 0.095|  0.029|
+|   30| 0.524| 0.096|  0.034|
+
+The values we need are $\hat{S}(26) = 0.599$ and $\sigma_S^2(26) = 0.025$, or $\sigma_S(26) = 0.1581139$.
+
+```{r echo=FALSE}
+a <- round(part_f(shat = 0.599, sigmas = 0.1581139), 4)
+```
+
+The table of results is:  
+
+|Group & Interval Type    | Interval            |
+|:------------------------|:--------------------|
+| Diploid, Log            | [`r a[1]`, `r a[2]`]
+| Diploid, Arcsine        | [`r a[3]`, `r a[4]`]
+
+
+### Aneuploid
+
+For this group, we can get the values we need from the following table (the complete version of this table is actually in the next problem):
+
+```{r eval=FALSE, results='hide', echo=FALSE}
+kable(round(print_EP_bands(EP.bands(otime = ane$time, censor = ane$delta, 10, 400, 2.5949)), 3)[,c(1:4)])
+```
+
+| $t_i$|$\hat{S}(t_i)$|$\sqrt{\hat{V}[\hat{S}(t_i)]}$|$\sigma_S^2$|
+|----:|-----:|-----:|------:|
+|   10| 0.904| 0.041|  0.002|
+|   13| 0.865| 0.047|  0.003|
+|   16| 0.827| 0.052|  0.004|
+|   24| 0.808| 0.055|  0.005|
+|   26| 0.788| 0.057|  0.005|
+|   27| 0.769| 0.058|  0.006|
+|   28| 0.750| 0.060|  0.006|
+|   30| 0.712| 0.063|  0.008|
+
+The values we need are $\hat{S}(26) = 0.788$ and $\sigma_S^2(26) = 0.005$, or $\sigma_S(26) = 0.07071068$.
+
+```{r echo=FALSE}
+a <- round(part_f(shat = 0.788, sigmas = 0.07071068), 4)
+```
+
+The table of results is:  
+
+|Group & Interval Type      | Interval            |
+|:--------------------------|:--------------------|
+| Aneuploid, Log            | [`r a[1]`, `r a[2]`]
+| Aneuploid, Arcsine        | [`r a[3]`, `r a[4]`]
+
+
+### g) Using the linear formula, the log-transformed formula, and the arcsine-square root formula, find the 95% EP confidence band for the survival function for both the diploid and aneuploid groups over the range 13-104 weeks.  
+
+I used a bunch of *R* code to get these results:  
+
+### Diploid
+
+The values for $a_L$ and $a_U$ are $a_L$ = `r aLaU(dip$time, dip$delta, 13, 104)[1]` and $a_U$ = `r aLaU(dip$time, dip$delta, 13, 104)[2]`.  These were rounded to the nearest values found in the table.  From the table, this means that $c_{0.05} = 2.7831$.  Then some behind the scenes *R* code prints out a table similar to the table from the textbook.  Note, "L" and "R" mean the left and right endpoints of the interval.  
+
+| $t_i$|$\hat{S}(t_i)$|$\sqrt{\hat{V}[\hat{S}(t_i)]}$|$\sigma_S^2$|Linear L|Linear R|Log L|Log R|Arcsine L|Arcsine R|
+|----:|-----:|-----:|------:|-------:|------:|------:|------:|-------:|------:|
+|   13| 0.711| 0.086|  0.015|   0.471|  0.951|  0.399|  0.881|   0.453|  0.911|
+|   18| 0.673| 0.090|  0.018|   0.424|  0.923|  0.365|  0.856|   0.412|  0.887|
+|   23| 0.636| 0.092|  0.021|   0.380|  0.892|  0.332|  0.830|   0.373|  0.861|
+|   26| 0.599| 0.094|  0.025|   0.337|  0.860|  0.301|  0.803|   0.336|  0.834|
+|   27| 0.561| 0.095|  0.029|   0.296|  0.826|  0.270|  0.775|   0.300|  0.805|
+|   30| 0.524| 0.096|  0.034|   0.257|  0.791|  0.241|  0.745|   0.266|  0.775|
+|   42| 0.486| 0.096|  0.039|   0.219|  0.754|  0.213|  0.715|   0.233|  0.743|
+|   56| 0.449| 0.096|  0.045|   0.183|  0.715|  0.186|  0.683|   0.202|  0.710|
+|   62| 0.412| 0.095|  0.053|   0.148|  0.675|  0.161|  0.650|   0.173|  0.675|
+|   69| 0.370| 0.094|  0.064|   0.109|  0.631|  0.133|  0.614|   0.140|  0.637|
+|  104| 0.278| 0.090|  0.106|   0.026|  0.529|  0.075|  0.532|   0.073|  0.550|
+|  104| 0.278| 0.090|  0.106|   0.026|  0.529|  0.075|  0.532|   0.073|  0.550|
+
+And below is a plot comparing the three confidence bands:  
+
+$\smallskip$
+
+```{r eval=TRUE, results='hide', echo=FALSE}
+kable(round(print_EP_bands(EP.bands(otime = dip$time, censor = dip$delta, 13, 104, 2.7831)), 3))
+```
+
+$\pagebreak$
+   
+### Aneuploid
+
+The values for $a_L$ and $a_U$ are $a_L$ = `r aLaU(ane$time, ane$delta, 13, 104)[1]` and $a_U$ = `r aLaU(ane$time, ane$delta, 13, 104)[2]`.  These were rounded to the nearest values found in the table.  From the table, this means that $c_{0.05} = 2.8784$.  Then some behind the scenes *R* code prints out a table similar to the table from the textbook.  Note, "L" and "R" mean the left and right endpoints of the interval.  
+
+| $t_i$|$\hat{S}(t_i)$|$\sqrt{\hat{V}[\hat{S}(t_i)]}$|$\sigma_S^2$|Linear L|Linear R|Log L|Log R|Arcsine L|Arcsine R|
+|----:|-----:|-----:|------:|-------:|------:|------:|------:|-------:|------:|
+|   13| 0.865| 0.047|  0.003|   0.729|  1.000|  0.651|  0.953|   0.704|  0.969|
+|   16| 0.827| 0.052|  0.004|   0.676|  0.978|  0.608|  0.930|   0.654|  0.948|
+|   24| 0.808| 0.055|  0.005|   0.650|  0.965|  0.588|  0.918|   0.630|  0.937|
+|   26| 0.788| 0.057|  0.005|   0.625|  0.951|  0.567|  0.905|   0.607|  0.925|
+|   27| 0.769| 0.058|  0.006|   0.601|  0.937|  0.547|  0.892|   0.584|  0.912|
+|   28| 0.750| 0.060|  0.006|   0.577|  0.923|  0.527|  0.879|   0.562|  0.899|
+|   30| 0.712| 0.063|  0.008|   0.531|  0.892|  0.488|  0.851|   0.519|  0.871|
+|   32| 0.692| 0.064|  0.009|   0.508|  0.877|  0.468|  0.837|   0.498|  0.857|
+|   41| 0.673| 0.065|  0.009|   0.486|  0.860|  0.450|  0.822|   0.477|  0.842|
+|   51| 0.654| 0.066|  0.010|   0.464|  0.844|  0.431|  0.807|   0.457|  0.827|
+|   65| 0.634| 0.067|  0.011|   0.442|  0.827|  0.412|  0.791|   0.436|  0.811|
+|   67| 0.614| 0.068|  0.012|   0.419|  0.809|  0.393|  0.775|   0.416|  0.795|
+|   70| 0.594| 0.068|  0.013|   0.398|  0.791|  0.374|  0.759|   0.395|  0.778|
+|   72| 0.575| 0.069|  0.014|   0.376|  0.773|  0.356|  0.743|   0.376|  0.762|
+|   73| 0.555| 0.069|  0.016|   0.355|  0.754|  0.338|  0.726|   0.356|  0.745|
+|   77| 0.534| 0.070|  0.017|   0.334|  0.735|  0.319|  0.709|   0.336|  0.727|
+|   91| 0.506| 0.071|  0.020|   0.300|  0.712|  0.290|  0.687|   0.306|  0.706|
+|   93| 0.478| 0.073|  0.023|   0.268|  0.688|  0.263|  0.665|   0.276|  0.683|
+|   96| 0.448| 0.074|  0.027|   0.235|  0.662|  0.234|  0.642|   0.246|  0.660|
+|  100| 0.416| 0.075|  0.033|   0.199|  0.633|  0.204|  0.617|   0.214|  0.634|
+|  104| 0.381| 0.077|  0.040|   0.161|  0.602|  0.173|  0.589|   0.180|  0.607|
+|  104| 0.381| 0.077|  0.040|   0.161|  0.602|  0.173|  0.589|   0.180|  0.607|
+
+And below is a plot comparing the three confidence bands:  
+
+$\smallskip$
+
+```{r eval=TRUE, results='hide', echo=FALSE}
+kable(round(print_EP_bands(EP.bands(otime = ane$time, censor = ane$delta, 13, 104, 2.8784)), 3))
+```
+
+$\pagebreak$
+
+
+### h) Using the linear formula, the log-transformed formula, and the arcsine-square root formula, find a 95% HW confidence band for the survival function for both the diploid and aneuploid groups over the range 0 to 104 weeks.  
+
+
+### Diploid
+
+The values for $a_L$ and $a_U$ are $a_L$ = `r aLaU(dip$time, dip$delta, 1, 104)[1]` and $a_U$ = `r aLaU(dip$time, dip$delta, 1, 104)[2]`.  These were rounded to the nearest values found in the table.  From the table, this means that $c_{0.05} = 1.3525$.  Then some behind the scenes *R* code prints out a table similar to the table from the textbook.  Note, "L" and "R" mean the left and right endpoints of the interval.   
+
+***Note: I made one small adjustment and found the confidence band over the range 1 to 104 to avoid a computer error, it should not affect the output very much.***
+
+| $t_i$|$\hat{S}(t_i)$|$\sigma_S^2$|Linear L|Linear R|Log L|Log R|Arcsine L|Arcsine R|
+|----:|-----:|------:|-------:|------:|------:|------:|-------:|------:|
+|    1| 0.964|  0.001|   0.709|  1.000|  0.000|  1.000|   0.407|  1.000|
+|    3| 0.929|  0.003|   0.673|  1.000|  0.048|  0.998|   0.519|  1.000|
+|    4| 0.893|  0.004|   0.637|  1.000|  0.242|  0.991|   0.539|  1.000|
+|    5| 0.821|  0.008|   0.566|  1.000|  0.384|  0.960|   0.515|  0.990|
+|    8| 0.786|  0.010|   0.530|  1.000|  0.395|  0.939|   0.493|  0.971|
+|   12| 0.748|  0.012|   0.492|  1.000|  0.389|  0.915|   0.465|  0.948|
+|   13| 0.711|  0.015|   0.454|  0.968|  0.374|  0.888|   0.435|  0.921|
+|   18| 0.673|  0.018|   0.416|  0.931|  0.354|  0.860|   0.403|  0.893|
+|   23| 0.636|  0.021|   0.378|  0.894|  0.330|  0.831|   0.371|  0.863|
+|   26| 0.599|  0.025|   0.340|  0.857|  0.304|  0.802|   0.339|  0.832|
+|   27| 0.561|  0.029|   0.302|  0.820|  0.277|  0.771|   0.306|  0.801|
+|   30| 0.524|  0.034|   0.264|  0.783|  0.249|  0.741|   0.273|  0.769|
+|   42| 0.486|  0.039|   0.226|  0.747|  0.220|  0.710|   0.240|  0.737|
+|   56| 0.449|  0.045|   0.188|  0.710|  0.191|  0.679|   0.207|  0.705|
+|   62| 0.412|  0.053|   0.150|  0.673|  0.163|  0.648|   0.174|  0.673|
+|   69| 0.370|  0.064|   0.106|  0.635|  0.130|  0.617|   0.138|  0.641|
+|  104| 0.278|  0.106|   0.000|  0.559|  0.059|  0.559|   0.057|  0.583|
+|  104| 0.278|  0.106|   0.000|  0.559|  0.059|  0.559|   0.057|  0.583|
+
+
+And below is a plot comparing the three confidence bands:  
+
+$\smallskip$
+
+```{r eval=TRUE, results='hide', echo=FALSE}
+kable(round(print_HW_bands(HW.bands(dip$time, dip$delta, 1, 104, 1.3525)), 3))
+```
+   
+$\pagebreak$
+   
+### Aneuploid
+
+The values for $a_L$ and $a_U$ are $a_L$ = `r aLaU(ane$time, ane$delta, 1, 104)[1]` and $a_U$ = `r aLaU(ane$time, ane$delta, 1, 104)[2]`.  These were rounded to the nearest values found in the table.  From the table, this means that $c_{0.05} = 1.3434$.  Then some behind the scenes *R* code prints out a table similar to the table from the textbook.  Note, "L" and "R" mean the left and right endpoints of the interval.   
+
+***Note: I made one small adjustment and found the confidence band over the range 1 to 104 to avoid a computer error, it should not affect the output very much.***
+
+| $t_i$|$\hat{S}(t_i)$|$\sigma_S^2$|Linear L|Linear R|Log L|Log R|Arcsine L|Arcsine R|
+|----:|-----:|------:|-------:|------:|------:|------:|-------:|------:|
+|    1| 0.981|  0.000|   0.794|  1.000|  0.000|  1.000|   0.468|  1.000|
+|    3| 0.942|  0.001|   0.756|  1.000|  0.191|  0.998|   0.641|  1.000|
+|    4| 0.923|  0.002|   0.737|  1.000|  0.369|  0.994|   0.652|  1.000|
+|   10| 0.904|  0.002|   0.718|  1.000|  0.460|  0.987|   0.652|  1.000|
+|   13| 0.865|  0.003|   0.679|  1.000|  0.527|  0.968|   0.635|  0.989|
+|   16| 0.827|  0.004|   0.641|  1.000|  0.537|  0.944|   0.609|  0.967|
+|   24| 0.808|  0.005|   0.621|  0.994|  0.533|  0.930|   0.595|  0.953|
+|   26| 0.788|  0.005|   0.602|  0.975|  0.526|  0.916|   0.579|  0.939|
+|   27| 0.769|  0.006|   0.583|  0.956|  0.517|  0.901|   0.563|  0.924|
+|   28| 0.750|  0.006|   0.564|  0.936|  0.506|  0.886|   0.547|  0.908|
+|   30| 0.712|  0.008|   0.525|  0.898|  0.480|  0.854|   0.513|  0.875|
+|   32| 0.692|  0.009|   0.506|  0.879|  0.466|  0.838|   0.496|  0.858|
+|   41| 0.673|  0.009|   0.487|  0.859|  0.451|  0.821|   0.478|  0.841|
+|   51| 0.654|  0.010|   0.468|  0.840|  0.436|  0.805|   0.461|  0.824|
+|   65| 0.634|  0.011|   0.448|  0.820|  0.419|  0.787|   0.442|  0.806|
+|   67| 0.614|  0.012|   0.428|  0.801|  0.403|  0.770|   0.424|  0.788|
+|   70| 0.594|  0.013|   0.408|  0.781|  0.386|  0.753|   0.405|  0.770|
+|   72| 0.575|  0.014|   0.388|  0.762|  0.369|  0.735|   0.387|  0.752|
+|   73| 0.555|  0.016|   0.368|  0.742|  0.352|  0.717|   0.368|  0.734|
+|   77| 0.534|  0.017|   0.347|  0.722|  0.334|  0.699|   0.349|  0.715|
+|   91| 0.506|  0.020|   0.314|  0.698|  0.305|  0.677|   0.318|  0.693|
+|   93| 0.478|  0.023|   0.281|  0.675|  0.276|  0.655|   0.288|  0.671|
+|   96| 0.448|  0.027|   0.246|  0.650|  0.244|  0.633|   0.256|  0.649|
+|  100| 0.416|  0.033|   0.206|  0.626|  0.210|  0.611|   0.220|  0.627|
+|  104| 0.381|  0.040|   0.161|  0.602|  0.173|  0.589|   0.180|  0.606|
+|  104| 0.381|  0.040|   0.161|  0.602|  0.173|  0.589|   0.180|  0.606|
+
+
+And below is a plot comparing the three confidence bands:  
+
+$\smallskip$
+
+```{r eval=TRUE, results='hide', echo=FALSE}
+kable(round(print_HW_bands(HW.bands(ane$time, ane$delta, 1, 104, 1.3434)), 3))
+```
+   
 $\pagebreak$
 
 # 4.4)
