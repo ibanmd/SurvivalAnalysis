@@ -1,0 +1,52 @@
+---
+title: "Larynx Example"
+author: "Mario Ibanez"
+date: "February 28, 2016"
+output: pdf_document
+---
+
+Using R to recreate an example from class...
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(knitr)
+library(KMsurv)
+library(survival)
+```
+
+The data set is in the KMsurv package, below are the first 12 lines of the data set:
+
+```{r}
+# Load data from KMsurv package
+data(larynx)
+attach(larynx)
+
+# Print first few rows
+kable(head(larynx, 12))
+```
+
+Now we need to fit a Cox PH model with a single covariate, age.
+
+```{r}
+cox_model <- coxph(Surv(time = time, event = delta) ~ age); summary(cox_model)
+```
+
+As in class, the coefficient for age is 0.023.  
+
+***log-likelihood (partial) = -195.906 ?***  
+
+Full model:
+
+```{r}
+cox_model2 <- coxph(Surv(time = time, event = delta) ~ as.factor(stage) + age) 
+summary(cox_model2)
+```
+
+
+
+
+
+
+
+
+
+
