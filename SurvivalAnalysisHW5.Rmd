@@ -5,22 +5,87 @@ date: "March 20, 2016"
 output: pdf_document
 ---
 
+```{r echo=FALSE, warning=FALSE}
+# extract a p-value from coxph
+local.coxph.test <- function(coxph.fit, pos, C=NA, d=NA, sign.digits=3){
+  # checking H_0: C*beta.hat = c
+  # coxph.fit is a coxph model
+  # pos is the position numbers of the parameters of interest
+  # C is a q-by-p matrix
+  # d is a q-by-1 matrix
+	n <- length(pos)
+	if(is.na(C)){
+		C <- matrix(0, n, n)
+		for(i in 1:n)
+			C[i,i] <- 1
+	} else {
+		if(dim(C)[1] != n)
+			stop("C has improper dimensions\n")
+	}
+	if(is.na(d))
+		d <- matrix(0, n, 1)
+	if(dim(d)[1] != dim(C)[1])
+		stop("C and d do not have appropriate dimensions\n")
+	I. <- coxph.fit$var[pos,pos]
+	est <- matrix(as.vector(coxph.fit$coeff[pos]), dim(C)[2])
+	X <- as.numeric( t(C%*%est - d) %*%
+		solve( t(C) %*% I. %*% C )  %*%
+		(C%*%est - d) )
+	signif(1-pchisq(X, dim(C)[1]), sign.digits)
+}
+```
+
 # Question 8.1
 **In section 1.11, a study was conducted on the effects of ploidy on the prognosis of patients with cancer of the tongue. Tissue samples were examined to determine if the tumor had a aneuploid or diploid DNA profile. Times to death for these two groups of patients are recorded in Table 1.6. To analyze this data create a single indicator variable, Z, which reflects the type of tumor.**  
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(KMsurv) # https://cran.r-project.org/web/packages/KMsurv/KMsurv.pdf
-data("tongue")
+library(survival)
+data("tongue") # 1=Aneuploid, 2=Diploid 
+tongue$type <- as.factor(tongue$type)
 head(tongue)
 ```
 
-**(a) Test the hypothesis of no effect of ploidy on survival using the score test.  Perform the test using the Breslow, Efron, and discrete method of handling ties and compare your results.**  
+```{r eval=FALSE}
+data(kidney)
+
+cox_model <- coxph(Surv(time = time, event = delta) ~ type, kidney)
+summary(cox_model)
+
+coxph(formula, data=, weights, subset, 
+      na.action, init, control, 
+      ties=c("efron","breslow","exact"), 
+      singular.ok=TRUE, robust=FALSE, 
+      model=FALSE, x=FALSE, y=TRUE, tt, method, ...)
+```
+
+**(a) Test the hypothesis of no effect of ploidy on survival using the score test.  Perform the test using the Breslow, Efron, and discrete method of handling ties and compare your results.  (Parts (c) and (d) are included here.)**  
+
+```{r}
+ques81a <- coxph(Surv(time = time, event = delta) ~ type, tongue, ties = "breslow")
+summary(ques81a)
+
+ques81a <- coxph(Surv(time = time, event = delta) ~ type, tongue, ties = "efron")
+summary(ques81a)
+
+ques81a <- coxph(Surv(time = time, event = delta) ~ type, tongue, ties = "exact")
+summary(ques81a)
+```
 
 **(b) Estimate $\beta$ and its standard error using all three methods of handling ties.  Find a 95% confidence interval for the relative risk of death of an individual with an aneuploid tumor as compared to an individual with a diploid tumor.**  
+Using the results from part (a):  
+
+**Breslow:**
+
+**Efron:**
+
+**Exact:**
 
 **(c) Repeat (a) using the likelihood test. Compare your answer to that of part a.**  
+Done in part (a).
 
 **(d) Repeat (a) using the Wald test. Compare your answer to those in parts a and c.**  
+Done in part (a)
 
 $\pagebreak$
 
@@ -32,21 +97,64 @@ rats <- data.frame(group = c(rep("Untreated", 10), rep("Radiated", 10), rep("Rad
                    time = c(20, 21, 23, 24, 24, 26, 26, 27, 28, 30,
                             26, 28, 29, 29, 30, 30, 31, 31 ,32, 35,
                             31, 32, 34, 35, 36, 38, 38, 39, 42, 42),
-                   event = c(rep(1, 19), 0, rep(1, 8), 0, 0))
+                   event = c(rep(1, 19), 0, rep(1, 8), 0, 0),
+                   group2 = c(rep("Untreated", 10), rep("Treated", 20)))
 head(rats)
 ```
 
 **(a) Estimate $\beta_1$ and $\beta_2$ and their respective standard errors.  Also find an estimate of the covariance matrix of your estimates.**
 
+use vcov function  vcov(cox_model)
+
+```{r}
+ques82a <- coxph(Surv(time = time, event = event) ~ group, data = rats, ties = "breslow")
+summary(ques82a)
+vcov(ques82a)
+```
+
 **(b) Test the global hypothesis of no effect of either radiation only or radiation plus BPA on survival.  Perform the test using all three tests (Wald, likelihood ratio, and score test).**
+
+danielle's wording should be different here.  It's only one variable, but has two dummy variables, three levels.
+
+```{r}
+summary(ques82a)
+```
 
 **(c) Test the hypothesis that the effect of radiation only on survival is the same as the effect of radiation plus BPA (i.e., test $H_0: \beta_1 = \beta_2$)**
 
+Not sure how to test this one...
+
+```{r}
+ques82c <- coxph(Surv(time = time, event = event) ~ group2, data = rats, ties = "breslow")
+summary(ques82c)
+vcov(ques82c)
+```
+
 **(d) Find an estimate and a 95% confidence interval for the relative risk of death for a radiation only animal compared to a radiation plus BPA animal.**
+
+danielle rat data mistake and mistake with typing question d, but we got the same answer more or less
+
+```{r}
+summary(ques82a)
+```
 
 **(e) Test the hypothesis that any radiation given as a treatment (either radiation alone or with BPA) has a different effect on survival than no radiation. Use the likelihood ratio test.**
 
+maybe this one again ?
+
+```{r}
+summary(ques82c)
+```
+
+danielle's answer is not what the question was asking
+
 **(f) Repeat part (e) using a Wald test based on the results of part (a).  Here you should test the hypothesis that $\beta_1 = \beta_2 = 0$** 
+
+This one should just be the global test 
+
+```{r}
+summary(ques82a)
+```
 
 $\pagebreak$
 
@@ -56,13 +164,28 @@ $\pagebreak$
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 data("hodg")
 head(hodg)
+hodg$gtype <- as.factor(hodg$gtype)
+hodg$dtype <- as.factor(hodg$dtype)
+str(hodg)
 ```
 
 **(a) Analyze this data by performing a global test of no effect of transplant type and disease state on survival.  Construct an ANOVA table to summarize estimates of the risk coefficients and the results of the one-degree-of-freedom tests for each covariate in the model.  Estimate the covariance matrix of your estimates.**  
 
+```{r}
+ques83a <- coxph(Surv(time = time, event = delta) ~ gtype + dtype + gtype*dtype, data = hodg, ties = "breslow")
+summary(ques83a)
+vcov(ques83a)
+```
+
 **(b) Test the hypothesis of disease type by type of transplant interaction using a likelihood ratio test.**  
 
+No idea
+
 **(c) Find point estimates and 95% confidence intervals for the relative risk of death for an auto transplant NHL patient compared to a NHL allo transplant patient.**
+
+```{r}
+summary(ques83a)
+```
 
 $\pagebreak$
 
@@ -72,13 +195,35 @@ $\pagebreak$
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 data("bmt")
 head(bmt)
+bmt$z10 <- as.factor(bmt$z10)
+bmt$group <- as.factor(bmt$group)
+
+str(bmt)
 ```
 
 **(a) Using an appropriate Cox model, test the hypothesis of no difference in the rate of development of aGVHD between MTX and no MTX patients. Find a point estimate and a 95% confidence interval for the relative risk of aGVHD for patients on the MTX protocol as compared to those not given MTX.**
 
+```{r}
+ques86a <- coxph(Surv(time = ta, event = da) ~ z10, data = bmt)
+summary(ques86a)
+vcov(ques86a)
+```
+
 **(b) Patients were also grouped into risk categories based on their status at the time of transplantation. These categories were as follows: acute lymphoblastic leukemia (ALL) with 38 patients and acute myeloctic leukemia (AML). The latter category was further subdivided into low-risk—first remission (54 patients) and high-risk—second remission or untreated first relapse or second or greater relapse or never in remission (45 patients). Test the hypothesis of interest (no effect of MTX on development of aGVHD) adjusting for the three disease categories.**
 
+Same as Danielle
+
+```{r}
+ques86b <- coxph(Surv(time = ta, event = da) ~ z10 + group, data = bmt)
+summary(ques86b)
+```
+
 **(c) Test for the possibility of an interaction between the disease categories and the use of MTX on timing of aGVHD.**
+
+```{r}
+ques86c <- coxph(Surv(time = ta, event = da) ~ z10 + group + z10*group, data = bmt)
+summary(ques86c)
+```
 
 **(d) Using the factors of age, sex, CMV status, FAB class, waiting time to transplant, and disease category as defined in Example 8.4, find the best model to test the primary hypothesis of no MTX effect on the occurence of aGVHD.  Test the primary hypothesis and find an estimate of the relative risk of occurence of aGVHD for an MTX patient as compared to a non-MTX patient.** 
 
