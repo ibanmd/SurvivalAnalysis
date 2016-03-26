@@ -1,0 +1,114 @@
+---
+title: "Survival Analysis HW 6"
+author: "Mario Ibanez"
+date: "March 26, 2016"
+output: pdf_document
+---
+```{r echo = FALSE, eval=TRUE}
+library(survival)
+library(KMsurv)
+```
+
+# Question 9.1
+In Exercise 8.1, a proportional hazards model was fit to data from a study of the effects of ploidy on survival for patients with cancer of the tongue.  A single binary covariate was used.  Using an appropriate time-dependent covariate, test the hypothesis that the hazard rates for the two groups are proportional.
+
+## Answer
+```{r echo = FALSE}
+data(tongue)
+tongue$Type[tongue$type == 1] <- "Aneuploid"
+tongue$Type[tongue$type == 2] <- "Diploid"
+```
+
+Below is a small view of the data for this question:
+
+```{r}
+head(tongue)
+```
+
+There are a few ways to test whether the hazard rates for the two groups are proportional, namely, adding time depending covariates to the model and testing their significance.  This can be done manually as was done in examples in the book.  A new covariate can be defined as:
+
+$$
+Z_2(t) = Z_1 * g(t)
+$$
+
+where $g(t)$ is a function of time such as $ln(time)$.  Below is the output of the model with this extra covariate:
+
+```{r warning=FALSE, message=FALSE}
+tongue$Z2_time <- tongue$type * log(tongue$time)
+cox_fit <- coxph(Surv(time = time, event = delta) ~ Type + Z2_time, 
+                 data = tongue, ties = "breslow")
+```
+
+$\pagebreak$
+
+```{r}
+summary(cox_fit)
+```
+
+The coefficient for the parameter $type*ln(time)$ has a very small p-value, which is evidence that the hazard is not proportional through time.  
+
+Another method is to use the built in function in *R* called *cox.zph*.  This function automatically performs the method used above to test whether the assumptions hold:
+
+```{r}
+cox_fit <- coxph(Surv(time = time, event = delta) ~ type, 
+                 data = tongue, ties = "breslow")
+cox_zph <- cox.zph(cox_fit, transform = log, global = TRUE)
+print(cox_zph); plot(cox_zph)
+```
+
+$\smallskip$
+
+Using this test, it appears that the assumption that the hazard rate is proportional through time is reasonable.  In the plot above, a line that is approximately horizontal is what would be expected if the assumption of proportional hazard was met.
+
+# Question 9.2
+In Exercise 8.2, a proportional hazards model was fit to data from a study of the survival of rats implanted with F98 glioma cells in their brains.  Three groups of rats were considered: control rats, rats given radiation only, and rats given radiation plus BPA.  Using an appropriate set of time-dependent covariates, test that the hazard rates of the three groups are proportional.
+
+## Answer
+```{r echo = FALSE}
+data(bnct)
+bnct$Treatment[bnct$trt == 1] <- "Untreated"
+bnct$Treatment[bnct$trt == 2] <- "Radiated"
+bnct$Treatment[bnct$trt == 3] <- "Radiated+BPA"
+```
+
+Below is a small view of the data for this question:
+
+```{r}
+head(bnct)
+```
+
+As in the previous question, a new covariate can be added to the model and tested for significance:
+
+$$
+Z_2(t) = Z_1 * g(t)
+$$
+
+Below is the output of fitting a Cox model with this extra time dependent covariate:
+
+```{r}
+bnct$Z2_time <- log(bnct$time) * bnct$trt
+cox_fit <- coxph(Surv(time = time, event = death) ~ Treatment + Z2_time, 
+                 data = bnct)
+summary(cox_fit)
+```
+
+The p-value for the time dependent coefficient is very low which is evidence that the proportional hazards assumption is not met.
+
+The built in *R* method can also be used to check this assumption:
+
+```{r}
+cox_fit <- coxph(Surv(time = time, event = death) ~ Treatment, data = bnct)
+cox.zph(cox_fit)
+```
+
+These p-values are consistent with the assumption that the proportional hazards assumption holds.  The plot below is also used to check the assumption:
+
+```{r}
+par(mfrow=c(1, 2))
+plot(cox.zph(cox_fit))
+```
+
+$\smallskip$
+
+There are two plots because the covariate *Treatment* has three levels.  Horizontal lines are consistent with the assumption of proportional hazards.  The lines in these two plots show some departure from being horizontal, which may be evidence that the assumption is not valid. 
+
